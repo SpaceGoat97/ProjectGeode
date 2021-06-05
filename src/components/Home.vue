@@ -1,7 +1,8 @@
 <template>
   <div>
-      <button class="button" v-on:click="greet">Connect wallet</button>
+      <button class="button" v-on:click="polkaConnect">Connect wallet</button>
       <p >{{ name }}: {{ address }}</p> <!-- This takes in the account name and the account address and displays it to the user after there has been a connection to PolkadotJS -->
+      <button class="button" v-on:click="injection">Inject</button>
   </div>
 </template>
 <style>
@@ -12,34 +13,30 @@
 // import Identicon from "@polkadot/vue-identicon";
 // import keyring from "@polkadot/ui-keyring";
 // import { cryptoWaitReady } from "@polkadot/util-crypto";
-import {
-  web3Accounts,
-  web3Enable,
-  //   web3ListRpcProviders,
-  //   web3UseRpcProvider,
-} from "@polkadot/extension-dapp";
+
+import { ApiPromise } from '@polkadot/api';
 
 
 export default {
   data: function () {
     let address;
     let name;
+    let network;
     return {
       address,
-      name
+      name,
+      network
     }
   },
   methods: {
-    async greet() {
-      // returns an array of all the injected sources
-      //   (this needs to be called first, before other requests)
-      await web3Enable("Starter"); // You can name this whatever your dapp is called. Just change the text in web3Enable.
-      await web3Accounts()
-      .then((res) => {
-        
-        return ( this.name = res[0].meta.name, this.address = res[0].address ) // This returns the address at the zero position on the array. If you remove the array, it'll show you all available addresses.
-      })
-    },
+    async polkaConnect() {
+        // Create a new instance of the api
+  const api = await ApiPromise.create();
+  // get the chain information
+  const chainInfo = await api.registry.getChainProperties()
+
+  console.log(chainInfo);
+    }
   },
 };
 </script>
