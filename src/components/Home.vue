@@ -1,8 +1,10 @@
 <template>
   <div>
-      <button class="button" v-on:click="polkaConnect">Connect wallet</button>
-      <p >{{ name }}: {{ address }}</p> <!-- This takes in the account name and the account address and displays it to the user after there has been a connection to PolkadotJS -->
-      <button class="button" v-on:click="injection">Inject</button>
+      <button class="button" v-on:click="connectWallet">Connect wallet</button>
+      <p >{{ this.name }}: {{ this.address }}</p> <!-- This takes in the account name and the account address and displays it to the user after there has been a connection to PolkadotJS -->
+      <button class="button" v-on:click="stakeBronze">Stake 50 EDG</button>
+      <button class="button" v-on:click="stakeSilver">Stake 500 EDG</button>
+      <button class="button" v-on:click="stakeGold">Stake 5000 EDG</button>
   </div>
 </template>
 <style>
@@ -20,42 +22,128 @@ import { spec } from '@edgeware/node-types';
 
 export default {
   data: function () {
-    let address;
-    let name;
-    let network;
+    let address, injector, name, api;
+    let network = 'wss://mainnet1.edgewa.re';
+    let SENDER = 'j4n4fPz3JKu7ahw2zgNjPLbjs1W14Rp7DWudkQGp3uj9unx';
+    let unit = '1000000000000000000';
     return {
       address,
+      injector,
+      api,
       name,
-      network
+      network,
+      SENDER,
+      unit
     }
   },
   methods: {
-    async polkaConnect() {
+    async connectWallet() {
         // The address we use to use for signing, as injected
-        const SENDER = 'j4n4fPz3JKu7ahw2zgNjPLbjs1W14Rp7DWudkQGp3uj9unx';
 
         const allInjected = await web3Enable("Geode"); // We want to access the PolkadotJS signer. We named it Geode and it'll trigger the PolkadotJS signer
 
-        const allAccounts = await web3Accounts(); // We want to get all the accounts
-        console.log(allInjected, allAccounts);
+        const currentAccount = await web3Accounts(); // We want to get all the accounts
+        console.log(currentAccount)
+        this.address = currentAccount[0].address
+        
+        console.log(allInjected, this.accounts);
+        this.name = currentAccount[0].meta.name;
 
         // finds an injector for an address
-        const injector = await web3FromAddress(SENDER);
+        this.injector = await web3FromAddress(this.address);
 
-        const api = await ApiPromise.create({ 
-            provider : new WsProvider('wss://mainnet1.edgewa.re'),
+        this.api = await ApiPromise.create({ 
+            provider : new WsProvider(this.network),
             typesBundle: spec.typesBundle,
           });
+    },
+    async stakeBronze(){
+            // The address we use to use for signing, as injected
+        const allInjected = await web3Enable("Geode"); // We want to access the PolkadotJS signer. We named it Geode and it'll trigger the PolkadotJS signer
 
-        // sign and send our transaction - notice here that the address of the account
-        // (as retrieved injected) is passed through as the param to the `signAndSend`,
-        // the API then calls the extension to present to the user and get it signed.
-        // Once complete, the api sends the tx + signature via the normal process
-        api.tx.balances
-          .transfer('5Dcs7PM6VUwLadsAjdUCwveUMr1nvUU2i8uWAfup1yio1R8W', 1)
-          .signAndSend(SENDER, { signer: injector.signer }, (status) => { console.log(status) });
+        const currentAccount = await web3Accounts(); // We want to get all the accounts
+        console.log(currentAccount)
+        this.address = currentAccount[0].address
+        
+        console.log(allInjected, this.accounts);
+        this.name = currentAccount[0].meta.name;
+
+        // finds an injector for an address
+        this.injector = await web3FromAddress(this.address);
+
+        this.api = await ApiPromise.create({ 
+            provider : new WsProvider(this.network),
+            typesBundle: spec.typesBundle,
+          });
+        const now = await this.api.query.timestamp.now();
+        console.log(now)
+
+        const { nonce, data: balance } = await this.api.query.system.account(this.address);
+        console.log(nonce, balance)
+
+        this.api.tx.balances
+          .transfer(this.address, '50000000000000000000')
+          .signAndSend(this.SENDER, { signer: this.injector.signer }, (status) => { console.log(status) })
+          .then((status)=>{
+            console.log(status)
+            
+          })
+    },
+    async stakeSilver(){
+                  // The address we use to use for signing, as injected
+        const allInjected = await web3Enable("Geode"); // We want to access the PolkadotJS signer. We named it Geode and it'll trigger the PolkadotJS signer
+
+        const currentAccount = await web3Accounts(); // We want to get all the accounts
+        console.log(currentAccount)
+        this.address = currentAccount[0].address
+        
+        console.log(allInjected, this.accounts);
+        this.name = currentAccount[0].meta.name;
+
+        // finds an injector for an address
+        this.injector = await web3FromAddress(this.address);
+
+        this.api = await ApiPromise.create({ 
+            provider : new WsProvider(this.network),
+            typesBundle: spec.typesBundle,
+          });
+        const now = await this.api.query.timestamp.now();
+        console.log(now)
+
+        const { nonce, data: balance } = await this.api.query.system.account(this.address);
+        console.log(nonce, balance)
+        this.api.tx.balances
+          .transfer(this.address, '500000000000000000000')
+          .signAndSend(this.SENDER, { signer: this.injector.signer }, (status) => { console.log(status) });
+    },
+    async stakeGold(){
+                  // The address we use to use for signing, as injected
+        const allInjected = await web3Enable("Geode"); // We want to access the PolkadotJS signer. We named it Geode and it'll trigger the PolkadotJS signer
+
+        const currentAccount = await web3Accounts(); // We want to get all the accounts
+        console.log(currentAccount)
+        this.address = currentAccount[0].address
+        
+        console.log(allInjected, this.accounts);
+        this.name = currentAccount[0].meta.name;
+
+        // finds an injector for an address
+        this.injector = await web3FromAddress(this.address);
+
+        this.api = await ApiPromise.create({ 
+            provider : new WsProvider(this.network),
+            typesBundle: spec.typesBundle,
+          });
+        const now = await this.api.query.timestamp.now();
+        console.log(now)
+
+        const { nonce, data: balance } = await this.api.query.system.account(this.address);
+        console.log(nonce, balance)
+        this.api.tx.balances
+          .transfer(this.address, '5000000000000000000000')
+          .signAndSend(this.SENDER, { signer: this.injector.signer }, (status) => { console.log(status) });
     }
-    
   },
+  
 };
 </script>

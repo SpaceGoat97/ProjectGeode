@@ -10,6 +10,7 @@
   "dependencies": {
     "@edgeware/node-types": "*",
     "@polkadot/api": "^4.12.1",
+    "@polkadot/api-contract": "^4.13.1",
     "@polkadot/extension-dapp": "^0.38.3",
     "core-js": "^3.6.5",
     "edgeware-node-types": "^3.3.4",
